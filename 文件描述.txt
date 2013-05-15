@@ -1,7 +1,7 @@
-Windows
-LockMap.h  		->�ṩwindows�� �๦����
-commonFun.h 		->ͨ�ù��ܺ������ϣ���װ�ܶೣ�ú�������
-analysis_SPSPPS.cpp	->H264������SPSPPS������ȡ�����㷨���ؼ��֣����ײ��㷨 SPSPPS�� 
+﻿Windows
+LockMap.h  		->提供windows下 多功能锁
+commonFun.h 		->通用功能函数集合，封装很多常用函数或范例
+analysis_SPSPPS.cpp	->H264码流中SPSPPS分析获取宽高算法（关键字：哥伦布算法 SPSPPS） 
 
 IOS
-Utilities.h ->IOS���ú�������
+Utilities.h ->IOS常用函数集合
