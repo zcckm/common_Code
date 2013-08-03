@@ -22,3 +22,20 @@ void mutParam_ptf(BOOL ptf,const char * param,...)
 	printf("%s",s);
 }
 #endif
+
+//#define CSTDBG 
+#ifdef CSTDBG
+#include <io.h>//Rain  用来输出调试信息
+#include <fcntl.h>//Rain
+#endif // CSTDBG
+
+#ifdef CSTDBG
+int nCrt = 0;
+FILE* fp;
+AllocConsole();
+nCrt = _open_osfhandle((long)GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
+fp = _fdopen(nCrt, "w");
+*stdout = *fp;
+setvbuf(stdout, NULL, _IONBF, 0);
+#endif
+
