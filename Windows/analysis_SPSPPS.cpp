@@ -1,29 +1,29 @@
 
 /*=======================================================================
-��������    :2012 /12 /25
-�ļ���      : analysis_SPSPPS.cpp
-����        : zcckm
-�汾        : 1.0.0.0
-�ļ�ʵ�ֹ��� :
-���ܽ���:����H264������ SPS PPS ��ȡ���еĿ�����Ϣ
-ע�⣺SPS PPS����Ϣ�����ǰ����������뷽ʽ�洢���ݶ���ͨ�����ײ�����
-�����Ҫ����SPS PPS�洢�ṹͨ�����ײ������������ҳ���Ҫ������
-���ײ�����
+创建日期    :2012 /12 /25
+文件名      : analysis_SPSPPS.cpp
+作者        : zcckm
+版本        : 1.0.0.0
+文件实现功能 :
+功能介绍:分析H264码流中 SPS PPS 获取其中的宽高信息
+注意：SPS PPS中信息并不是按照正常编码方式存储数据而是通过哥伦布编码
+因此需要按照SPS PPS存储结构通过哥伦布编码规则才能找出需要的数据
+哥伦布编码
 
-b(8):������ʽ��8�����ֽڣ�����Ϊ��˵���﷨Ԫ����Ϊ8�����أ�û���﷨�ϵĺ��壩
-f(n):nλ�̶�ģʽ���ش�����ֵ�̶�����forbidden_zero_bit��ֵ��Ϊ0��
-i(n):ʹ��n���ص��з����������﷨��û�в��ô˸�ʽ��
-u(n):nλ�޷�������
+b(8):任意形式的8比特字节（就是为了说明语法元素是为8个比特，没有语法上的含义）
+f(n):n位固定模式比特串（其值固定，如forbidden_zero_bit的值恒为0）
+i(n):使用n比特的有符号整数（语法中没有采用此格式）
+u(n):n位无符号整数
 
-ָ�����ײ����룺
-ue(v):�޷�������ָ�����ײ��������﷨Ԫ��
-se(v):�з�������ָ�����ײ�������﷨Ԫ�أ���λ����
-te(v):��λָ�����ײ�������﷨Ԫ�أ���λ����
+指数哥伦布编码：
+ue(v):无符号整数指数哥伦布码编码的语法元素
+se(v):有符号整数指数哥伦布编码的语法元素，左位在先
+te(v):舍位指数哥伦布码编码语法元素，左位在先
 
-  sps pps �ṹ��14496-part10����˵����
+  sps pps 结构在14496-part10中有说明。
 --------------------------------------------------------------------------
-�޸ļ�¼:
-��  ��      �汾        �޸���      �޸�����
+修改记录:
+日  期      版本        修改人      修改内容
 =======================================================================*/
 #include "stdafx.h"
 #include <iostream.h>
@@ -40,15 +40,20 @@ typedef struct
 	unsigned int m_height;
 }FRAMEINFO;
 
-bool getBit(u8 * data,u8 offset)
+/*====================================================================
+  函数名：getBit
+  功能：获取指定位置字节 0 OR 1
+  算法实现：
+  引用全局变量：
+  输入参数说明：
+			u8 * pBuffer 需要处理的数据数组
+			u32 dwOffset 指定字节起始于pBuffer间的偏移
+  返回值说明: 当前位置是 0 OR 1
+  ====================================================================*/
+bool getBit(u8 * pBuffer,u32 dwOffset)
 {
-	u8 offset_byte = 0;
-	if (offset == 0)
-	{
-		offset = 1;
-	}
-	offset_byte = (offset-1) % 8;
-	return (data[(offset-1)/8] & (0x80 >> offset_byte))? true:false;
+	return pBuffer[dwOffset/8] & ( 0x80 >> (dwOffset%8) )?true:false;
+
 }
 
 unsigned int columbusDecode(u8 * data, u8 start_pos,u8 * offset)
